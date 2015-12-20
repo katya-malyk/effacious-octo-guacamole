@@ -1,4 +1,4 @@
-# ~*~ coding: utf-8 ~*~
+# ~*~ coding:utf-8 ~*~
 
 import sys
 from PyQt5.QtWidgets import QApplication
@@ -9,4 +9,3 @@ if __name__ == '__main__':
     window = Window()
     window.show()
     sys.exit(app.exec_())
-
