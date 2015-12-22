@@ -1,15 +1,15 @@
 # ~*~ coding:utf-8 ~*~
 
-import math
 from PyQt5.QtCore import QRect, QSize, QPoint, Qt
 from PyQt5.QtGui import QPainter, QPalette, QPen, QPolygon, QColor
 from PyQt5.QtWidgets import QWidget, QColorDialog
 from sphere import Sphere
 
-# TODO Добавить источник света и сделать тени на объекте
-
 
 class RenderArea(QWidget):
+    """
+    Класс области рисования
+    """
     def __init__(self, parent=None):
         super(RenderArea, self).__init__(parent)
 
@@ -18,6 +18,7 @@ class RenderArea(QWidget):
         self.pen = QPen(QColor(0, 0, 0), 0)
         self.faces_color = QColor(0, 255, 0)
         self.is_light = False
+        self.is_clipping = False
 
         self.setBackgroundRole(QPalette.Base)
         self.setAutoFillBackground(True)
@@ -42,20 +43,6 @@ class RenderArea(QWidget):
             label.setText("Цвет линии " + color.name())
         self.update()
 
-    def set_faces_color(self, label):
-        color = QColorDialog.getColor()
-        if color.isValid():
-            self.faces_color = color
-            label_palette = QPalette()
-            label_palette.setColor(QPalette.WindowText, color)
-            label.setPalette(label_palette)
-            label.setText("Цвет объекта" + color.name())
-        self.update()
-
-    def set_light(self, is_light):
-        self.is_light = is_light
-        self.update()
-
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setPen(self.pen)
@@ -73,7 +60,10 @@ class RenderArea(QWidget):
         painter.drawRect(QRect(0, 0, self.width() - 1, self.height() - 1))
 
     def draw_item(self, face, painter):
-        if self.sphere.is_face_visible(face):
+        is_draw = True
+        if self.is_clipping:
+            is_draw = self.sphere.is_face_visible(face)
+        if is_draw:
             polygon = QPolygon()
             for index, point_index in enumerate(face):
                 p1_x = int(self.sphere.geom.points[face[index-1]][0])
@@ -114,9 +104,30 @@ class RenderArea(QWidget):
                     painter.drawLine(real_p1, real_p2)
 
             if self.is_light:
+
                 painter.setBrush(self.sphere.get_face_light(face, self.faces_color))
                 painter.drawPolygon(polygon)
 
     def set_projection(self, button):
         self.sphere.projection_name = button.objectName()
+        self.update()
+
+    def set_clipping(self, state):
+        self.is_clipping = True if state == Qt.Checked else False
+        self.update()
+
+    def set_faces_color(self, label):
+        color = QColorDialog.getColor()
+        if color.isValid():
+            self.faces_color = color
+            label_palette = QPalette()
+            label_palette.setColor(QPalette.WindowText, color)
+            label.setPalette(label_palette)
+            label.setText("Цвет объекта " + color.name())
+        self.update()
+
+    def set_light(self, is_light, clipping_checkbox):
+        self.is_light = is_light
+        clipping_checkbox.setChecked(self.is_light)
+        clipping_checkbox.setDisabled(self.is_light)
         self.update()
