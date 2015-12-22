@@ -123,19 +123,19 @@ class Window(QWidget):
 
         # Перспективная
         self.perspective_teta_angle_Label = QLabel("Угол θ:")
-        self.perspective_teta_angle_SpinBox = self.create_spinbox(0, 0, 360)
+        self.perspective_teta_angle_SpinBox = self.create_spinbox(580, -1000, 1000)
         self.perspective_teta_angle_Label.setBuddy(self.perspective_teta_angle_SpinBox)
 
         self.perspective_fi_angle_Label = QLabel("Угол φ:")
-        self.perspective_fi_angle_SpinBox = self.create_spinbox(180, 0, 360)
+        self.perspective_fi_angle_SpinBox = self.create_spinbox(-5, -1000, 1000)
         self.perspective_fi_angle_Label.setBuddy(self.perspective_fi_angle_SpinBox)
 
         self.perspective_d_Label = QLabel("d:")
-        self.perspective_d_SpinBox = self.create_spinbox(80, 0, 500)
+        self.perspective_d_SpinBox = self.create_spinbox(250, -1000, 1000)
         self.perspective_d_Label.setBuddy(self.perspective_d_SpinBox)
 
         self.perspective_ro_Label = QLabel("ρ:")
-        self.perspective_ro_SpinBox = self.create_spinbox(150, 0, 1000)
+        self.perspective_ro_SpinBox = self.create_spinbox(420, -1000, 1000)
         self.perspective_ro_Label.setBuddy(self.perspective_ro_SpinBox)
 
         # Наполняем второй таб для интерфейса пользователя

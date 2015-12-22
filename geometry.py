@@ -54,7 +54,7 @@ class Geometry:
         self.m_axonometric = np.zeros(0)
         self.m_oblique = np.zeros(0)
         self.m_perspective = np.zeros(0)
-        self.m_perspective_w = np.zeros(0)
+        self.m_perspective_view = np.zeros(0)
 
     def clear(self):
         self.clear_points = []
@@ -90,28 +90,15 @@ class Geometry:
         elif name == "oblique":
             self.points = self.multiplication_matrix(self.points, self.m_oblique)
         elif name == "perspective":
-            # TODO Заставить перспективную проекцию работать
-            move_x = 0
-            move_y = 50
-            move_z = 100
-            for point in self.points:
-                point[0] += move_x
-                point[1] += move_y
-                point[2] += move_z
-
+            self.points = self.multiplication_matrix(self.points, self.m_perspective_view)
             self.points = self.multiplication_matrix(self.points, self.m_perspective)
-            self.points = self.multiplication_matrix(self.points, self.m_perspective_w)
             for point in self.points:
-                if point[3] != 0:
-                    point[0] /= point[3]
-                    point[1] /= point[3]
-                    point[2] /= point[3]
-                    point[3] /= point[3]
-
-            for point in self.points:
-                point[0] += move_x
-                point[1] += move_y
-                point[2] += move_z
+                if point[3] == 0:
+                    point[3] = 0.00001
+                point[0] /= point[3]
+                point[1] /= point[3]
+                point[2] /= point[3]
+                point[3] /= point[3]
 
     @staticmethod
     def from_polar(radius, angle, z_axis):
@@ -224,12 +211,12 @@ class Geometry:
 
         if self.perspective_d == 0:
             self.perspective_d = 1
-        self.m_perspective_w = np.array([[1, 0, 0, 0],
-                                         [0, 1, 0, 0],
-                                         [0, 0, 1, 1/self.perspective_d],
-                                         [0, 0, 0, 0]])
+        self.m_perspective = np.array([[1, 0, 0, 0],
+                                       [0, 1, 0, 0],
+                                       [0, 0, 1, 1/self.perspective_d],
+                                       [0, 0, 0, 0]])
 
-        self.m_perspective = np.array([[-angle_teta_sin, -angle_fi_cos * angle_teta_cos, -angle_fi_sin * angle_teta_cos, 0],
-                                       [angle_teta_cos,  -angle_fi_cos * angle_teta_sin, -angle_fi_sin * angle_teta_sin, 0],
-                                       [0,               angle_fi_sin,                   -angle_fi_cos,                  0],
-                                       [0,               0,                              self.perspective_ro,            1]])
+        self.m_perspective_view = np.array([[-angle_teta_sin, -angle_fi_cos * angle_teta_cos, -angle_fi_sin * angle_teta_cos, 0],
+                                            [angle_teta_cos,  -angle_fi_cos * angle_teta_sin, -angle_fi_sin * angle_teta_sin, 0],
+                                            [0,               angle_fi_sin,                   -angle_fi_cos,                  0],
+                                            [0,               0,                              self.perspective_ro,            1]])
